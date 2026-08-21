@@ -47,14 +47,25 @@ def metric_card(col, label, value, delta=None):
     </div>
     """, unsafe_allow_html=True)
 
-def style_fig(fig, title):
+def style_fig(fig, title, show_legend=False):
     fig.update_layout(
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
         font=dict(family="IBM Plex Mono", color=CREAM),
         title=dict(text=title, font=dict(family="Fraunces", size=18, color=GOLD)),
+        showlegend=show_legend,
     )
     return fig
+
+def vertical_divider(mid_col, height=400):
+    mid_col.markdown(f"""
+    <div style="border-left:1px solid {GOLD}; height:{height}px; margin:0 auto;"></div>
+    """, unsafe_allow_html=True)
+
+def horizontal_divider():
+    st.markdown(f"""
+    <hr style="border:none; border-top:1px solid {GOLD}; margin:28px 0;">
+    """, unsafe_allow_html=True)
 
 # --- DONNÉES ---
 df = pd.read_excel("data/dataset_ipres.xlsx")
@@ -83,7 +94,7 @@ if df_filtre.empty:
 
 # --- TITRE ---
 st.title("TABLEAU DE BORD")
-st.markdown("---")
+horizontal_divider()
 st.header("INDICATEURS")
 
 # --- KPIs ---
@@ -105,14 +116,16 @@ metric_card(col3, "Région la moins contributrice", region_qui_cotise_le_moins, 
 metric_card(col4, "Région la plus contributrice", region_qui_cotise_le_plus, f"{total_max:,.0f}".replace(",", " "))
 
 # --- VISUALISATIONS ---
-st.markdown("---")
+horizontal_divider()
 st.header("Visualisations")
-col1, col2 = st.columns(2)
+col1, colmid, col2 = st.columns([10, 1, 10])
 
 with col1:
     fig = px.pie(cotisation_par_region, names="Region", values="Total", hole=0.5,
                  color_discrete_sequence=PALETTE)
-    st.plotly_chart(style_fig(fig, "Cotisation par région"), use_container_width=True)
+    st.plotly_chart(style_fig(fig, "Cotisation par région", show_legend=True), use_container_width=True)
+
+vertical_divider(colmid)
 
 region_effectif = df_filtre.groupby("Region")["Effectif Salaries"].sum().reset_index()
 region_effectif.columns = ["Region", "Nombre"]
@@ -130,12 +143,15 @@ statut = df_filtre["Statut Cotisation"].value_counts().reset_index()
 statut.columns = ["Statut cotisation", "nombre"]
 statut = statut.sort_values("nombre", ascending=False)
 
-st.markdown("---")
-col1, col2 = st.columns(2)
+horizontal_divider()
+col1, colmid, col2 = st.columns([10, 1, 10])
 with col1:
     fig = px.bar(impayes, x="Region", y="nombre de mois",
                  color="Region", color_discrete_sequence=PALETTE)
     st.plotly_chart(style_fig(fig, "Mois impayés par région"), use_container_width=True)
+
+vertical_divider(colmid)
+
 with col2:
     fig = px.bar(statut, x="Statut cotisation", y="nombre",
                  color="Statut cotisation", color_discrete_sequence=PALETTE)
@@ -149,12 +165,15 @@ relance = df_filtre["Dernier Canal Relance"].value_counts().reset_index()
 relance.columns = ["Dernier Canal Relance", "nombre"]
 relance = relance.sort_values("nombre", ascending=False)
 
-st.markdown("---")
-col1, col2 = st.columns(2)
+horizontal_divider()
+col1, colmid, col2 = st.columns([10, 1, 10])
 with col1:
     fig = px.pie(secteur, names="Secteur Activite", values="Type", hole=0.5,
                  color_discrete_sequence=PALETTE)
-    st.plotly_chart(style_fig(fig, "Secteurs d'activité"), use_container_width=True)
+    st.plotly_chart(style_fig(fig, "Secteurs d'activité", show_legend=True), use_container_width=True)
+
+vertical_divider(colmid)
+
 with col2:
     fig = px.bar(relance, x="Dernier Canal Relance", y="nombre",
                  color="Dernier Canal Relance", color_discrete_sequence=PALETTE)
