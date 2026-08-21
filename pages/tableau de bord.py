@@ -53,7 +53,6 @@ def style_fig(fig, title):
         paper_bgcolor="rgba(0,0,0,0)",
         font=dict(family="IBM Plex Mono", color=CREAM),
         title=dict(text=title, font=dict(family="Fraunces", size=18, color=GOLD)),
-        showlegend=False,
     )
     return fig
 
@@ -90,6 +89,7 @@ st.header("INDICATEURS")
 # --- KPIs ---
 cotisation_par_region = df_filtre.groupby("Region")["Cotisation Mensuelle"].agg(["sum", "mean"]).reset_index()
 cotisation_par_region.columns = ["Region", "Total", "Moyenne"]
+cotisation_par_region = cotisation_par_region.sort_values("Total", ascending=False)
 
 region_qui_cotise_le_plus = cotisation_par_region.loc[cotisation_par_region["Total"].idxmax(), "Region"]
 region_qui_cotise_le_moins = cotisation_par_region.loc[cotisation_par_region["Total"].idxmin(), "Region"]
@@ -116,6 +116,7 @@ with col1:
 
 region_effectif = df_filtre.groupby("Region")["Effectif Salaries"].sum().reset_index()
 region_effectif.columns = ["Region", "Nombre"]
+region_effectif = region_effectif.sort_values("Nombre", ascending=False)
 with col2:
     fig = px.bar(region_effectif, y="Region", x="Nombre", orientation="h",
                  color="Region", color_discrete_sequence=PALETTE)
@@ -123,8 +124,11 @@ with col2:
 
 impayes = df_filtre.groupby("Region")["Mois Impayes"].sum().reset_index()
 impayes.columns = ["Region", "nombre de mois"]
+impayes = impayes.sort_values("nombre de mois", ascending=False)
+
 statut = df_filtre["Statut Cotisation"].value_counts().reset_index()
 statut.columns = ["Statut cotisation", "nombre"]
+statut = statut.sort_values("nombre", ascending=False)
 
 st.markdown("---")
 col1, col2 = st.columns(2)
@@ -139,8 +143,11 @@ with col2:
 
 secteur = df_filtre["Secteur Activite"].value_counts().reset_index()
 secteur.columns = ["Secteur Activite", "Type"]
+secteur = secteur.sort_values("Type", ascending=False)
+
 relance = df_filtre["Dernier Canal Relance"].value_counts().reset_index()
 relance.columns = ["Dernier Canal Relance", "nombre"]
+relance = relance.sort_values("nombre", ascending=False)
 
 st.markdown("---")
 col1, col2 = st.columns(2)
