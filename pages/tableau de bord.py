@@ -109,10 +109,10 @@ total_max = cotisation_par_region["Total"].max()
 total_min = cotisation_par_region["Total"].min()
 moyenne_globale = df_filtre["Cotisation Mensuelle"].mean()
 
-col1, col2, col3, col4 = st.columns(4)
-metric_card(col2, "Cotisation globale", f"{cotisation_globale:,.0f}".replace(",", " "))
-metric_card(col3, "Région la moins contributrice", region_qui_cotise_le_moins, f"{total_min:,.0f}".replace(",", " "))
-metric_card(col4, "Région la plus contributrice", region_qui_cotise_le_plus, f"{total_max:,.0f}".replace(",", " "))
+col1, col2, col3, = st.columns(3)
+metric_card(col1, "Cotisation globale", f"{cotisation_globale:,.0f}".replace(",", " "))
+metric_card(col2, "Région la moins contributrice", region_qui_cotise_le_moins, f"{total_min:,.0f}".replace(",", " "))
+metric_card(col3, "Région la plus contributrice", region_qui_cotise_le_plus, f"{total_max:,.0f}".replace(",", " "))
 
 # --- VISUALISATIONS ---
 horizontal_divider()
